@@ -7,28 +7,60 @@ DB = mysql.connector.connect(
   password="podcast-into-colour-assume",
   database="sql2300317"
 )
+
 #Most recent Select Result
-selectResult = ""
+readResult = []
 
-#ASSETS
-def insertAsset(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12):
+#ASSET CRUD
+def createAsset(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12):
     mycursor = DB.cursor()
-
     sql = "INSERT INTO atAsset (ID, OS, purchaseDate, purchasePrice, notes, sysName, model, manufacturer, deviceType, IP, ram, storage) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     val = (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)
     mycursor.execute(sql, val)
     DB.commit()
-
-    print(mycursor.rowcount, "record inserted.")
-
-def selectAsset(field, where):
+    
+def readAsset(field, where):
+    global readResult
     mycursor = DB.cursor()
 
-    if field or where is None:
-        sql = "SELECT * FROM atAsset"
+    if field is None and where is None:
+        mycursor.execute("SELECT * FROM atAsset")
     else:
-        sql = "SELECT * FROM atAsset WHERE " + field + " = '" + where + "'"
+        sql = f"SELECT * FROM atAsset WHERE {field} = %s"
+        mycursor.execute(sql, (where,))
 
-    mycursor.execute(sql)
-    myresult = mycursor.fetchall()
-    selectResult = myresult
+    readResult = mycursor.fetchall()
+
+def updateAsset(setF, setV, whereF, whereV):
+    mycursor = DB.cursor()
+    sql = "UPDATE atAsset SET %s = %s WHERE %s = %s"    
+    val = (setF, setV, whereF, whereV)
+    mycursor.execute(sql, val)
+    DB.commit()
+
+#EMPLOYEE CRUD
+def createEmployee(v1, v2, v3, v4):
+    mycursor = DB.cursor()
+    sql = "INSERT INTO atEmployee (depID, email, fName, lName) VALUES (%s, %s, %s, %s)"
+    val = (v1, v2, v3, v4)
+    mycursor.execute(sql, val)
+    DB.commit()
+    
+def readEmployee(field, where):
+    global readResult
+    mycursor = DB.cursor()
+
+    if field is None and where is None:
+        mycursor.execute("SELECT * FROM atEmployee")
+    else:
+        sql = f"SELECT * FROM atEmployee WHERE {field} = %s"
+        mycursor.execute(sql, (where,))
+
+    readResult = mycursor.fetchall()
+
+def updateEmployee(setF, setV, whereF, whereV):
+    mycursor = DB.cursor()
+    sql = "UPDATE atEmployee SET %s = %s WHERE %s = %s"    
+    val = (setF, setV, whereF, whereV)
+    mycursor.execute(sql, val)
+    DB.commit()

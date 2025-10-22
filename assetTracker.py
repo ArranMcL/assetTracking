@@ -1,48 +1,51 @@
 from tkinter import *
 import databaseAPI as db
 
+def refreshButtonOnClick():
+    db.readAsset(None, None)
+    assetDisplay = Label(root,text=db.readResult)
+    assetDisplay.pack()
+#[(0, 'Windows 11', datetime.date(2025, 1, 1), 105.99, 'Jerrys Laptop', 'laptop-123-h123-f', 'NotePad S305', 'Asus', 'Laptop', '192.168.0.1', 8, 256)]
+
+# Initialises window
 root = Tk()
-
-btnSelect = Button(master=root,text="SELECT", command=lambda: db.selectAsset(None, None))
-btnSelect.pack()
-
-#btnInsert = Button(master=root,text="INSERT", command=lambda: db.insertAsset())
-#btnInsert.pack()
 
 # Creating Menubar
 menubar = Menu(root)
-
-# Adding File Menu and commands
-file = Menu(menubar, tearoff = 0)
-menubar.add_cascade(label ='File', menu = file)
-file.add_command(label ='New File', command = None)
-file.add_command(label ='Open...', command = None)
-file.add_command(label ='Save', command = None)
-file.add_separator()
-file.add_command(label ='Exit', command = root.destroy)
-
-# Adding Edit Menu and commands
-edit = Menu(menubar, tearoff = 0)
-menubar.add_cascade(label ='Edit', menu = edit)
-edit.add_command(label ='Cut', command = None)
-edit.add_command(label ='Copy', command = None)
-edit.add_command(label ='Paste', command = None)
-edit.add_command(label ='Select All', command = None)
-edit.add_separator()
-edit.add_command(label ='Find...', command = None)
-edit.add_command(label ='Find again', command = None)
-
-# Adding Help Menu
-help_ = Menu(menubar, tearoff = 0)
-menubar.add_cascade(label ='Help', menu = help_)
-help_.add_command(label ='Tk Help', command = None)
-help_.add_command(label ='Demo', command = None)
-help_.add_separator()
-help_.add_command(label ='About Tk', command = None)
-
-# display Menu
 root.config(menu = menubar)
 
+# Adding Assets Menu and Commands
+assets = Menu(menubar, tearoff = 0)
+menubar.add_cascade(label ='Assets', menu = assets)
+assets.add_command(label ='New', command = None)
+assets.add_command(label ='Update', command = None)
+assets.add_command(label ='Remove', command = None)
 
+# Adding Employees Menu and Commands
+employees = Menu(menubar, tearoff = 0)
+menubar.add_cascade(label ='Employees', menu = employees)
+employees.add_command(label ='New', command = None)
+employees.add_command(label ='Update', command = None)
+employees.add_command(label ='View All', command = None)
+employees.add_command(label ='Remove', command = None)
+
+# Adding Exit Button
+ExitBtn = menubar.add_command(label ='Close', command = root.destroy)
+
+# Creating Refresh Button
+refreshBtn = Button(master=root,text ="Refresh", command=refreshButtonOnClick)
+refreshBtn.pack()
+
+# Creating Display Table
+table = Frame(root)
+i = 0
+db.readAsset(None, None)
+for x in db.readResult:
+    for y in x:
+        item = Label(table, text =y)
+        item.grid(column= i%12, row=i//12)
+        i = i + 1
+        print("created grid item")
+table.pack()
 
 root.mainloop()
