@@ -1,23 +1,43 @@
 from tkinter import *
 import databaseAPI as db
 
+def clearTable():
+    for widget in table.winfo_children():
+        widget.destroy()
+
+# Reads assets from database and displays them in a table
 def refreshButtonOnClick():
+    # Creating Display Table
+    clearTable()
+    i = 0
     db.readAsset(None, None)
-    assetDisplay = Label(root,text=db.readResult)
-    assetDisplay.pack()
-#[(0, 'Windows 11', datetime.date(2025, 1, 1), 105.99, 'Jerrys Laptop', 'laptop-123-h123-f', 'NotePad S305', 'Asus', 'Laptop', '192.168.0.1', 8, 256)]
+    keys = ["ID","Name","Model","Manufacturer","Operating System","Purchase Date","Purchase Price","Notes","Type","IP","RAM","Storage"]
+    for z, k in enumerate(keys):
+        item = Label(table, text=k, bg="red")
+        item.grid(column=z%12, row=0, padx=(1, 1), pady=(1, 1))
+    for x in db.readResult:
+        for y in x:
+            item = Label(table, text =y, bg="white")
+            item.grid(column= i%12, row=(i+12)//12, padx=(1, 1), pady=(1, 1))
+            i = i + 1
+    table.pack(padx=(5, 5), pady=(5, 5), side=TOP, anchor=NW)
+
+# Opens a form to insert a new item
+def insertAssetOnClick():
+    clearTable()
 
 # Initialises window
 root = Tk()
-
-# Creating Menubar
 menubar = Menu(root)
 root.config(menu = menubar)
+root.title("Asset Tracker")
+root.geometry("1000x500")
+table = Frame(root, bg="white")
 
 # Adding Assets Menu and Commands
 assets = Menu(menubar, tearoff = 0)
 menubar.add_cascade(label ='Assets', menu = assets)
-assets.add_command(label ='New', command = None)
+assets.add_command(label ='New', command = insertAssetOnClick)
 assets.add_command(label ='Update', command = None)
 assets.add_command(label ='Remove', command = None)
 
@@ -29,23 +49,13 @@ employees.add_command(label ='Update', command = None)
 employees.add_command(label ='View All', command = None)
 employees.add_command(label ='Remove', command = None)
 
+# Adding Refresh Button
+refreshBtn = menubar.add_command(label ='Refresh', command=refreshButtonOnClick)
+
 # Adding Exit Button
 ExitBtn = menubar.add_command(label ='Close', command = root.destroy)
 
-# Creating Refresh Button
-refreshBtn = Button(master=root,text ="Refresh", command=refreshButtonOnClick)
-refreshBtn.pack()
-
-# Creating Display Table
-table = Frame(root)
-i = 0
-db.readAsset(None, None)
-for x in db.readResult:
-    for y in x:
-        item = Label(table, text =y)
-        item.grid(column= i%12, row=i//12)
-        i = i + 1
-        print("created grid item")
-table.pack()
+# Init Table
+refreshButtonOnClick()
 
 root.mainloop()

@@ -14,7 +14,7 @@ readResult = []
 #ASSET CRUD
 def createAsset(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12):
     mycursor = DB.cursor()
-    sql = "INSERT INTO atAsset (ID, OS, purchaseDate, purchasePrice, notes, sysName, model, manufacturer, deviceType, IP, ram, storage) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO atAsset (ID, sysName, model, manufacturer, OS, purchaseDate, purchasePrice, notes, deviceType, IP, ram, storage) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     val = (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)
     mycursor.execute(sql, val)
     DB.commit()
