@@ -1,4 +1,4 @@
-import mysql.connector 
+import mysql.connector
 
 #Database Connection
 DB = mysql.connector.connect(
@@ -18,7 +18,7 @@ def createAsset(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12):
     val = (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)
     mycursor.execute(sql, val)
     DB.commit()
-    
+
 def readAsset(field, where):
     global readResult
     mycursor = DB.cursor()
@@ -45,7 +45,7 @@ def createEmployee(v1, v2, v3, v4):
     val = (v1, v2, v3, v4)
     mycursor.execute(sql, val)
     DB.commit()
-    
+  
 def readEmployee(field, where):
     global readResult
     mycursor = DB.cursor()
