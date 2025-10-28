@@ -1,3 +1,6 @@
+#Arran McLoughlin - 2300317
+#https://github.com/ArranMcL/assetTracking
+
 from tkinter import *
 import databaseAPI as db
 from tkcalendar import Calendar, DateEntry
@@ -26,6 +29,23 @@ def refreshButtonOnClick():
 def newAssetForm():
     clearTable()
 
+    def insertAssetOnClick():
+        if oDef.get() == "Select an OS" or not pounds.get().isdigit() or \
+        not pence.get().isdigit() or notes.get() == "" or name.get() == "" or \
+        model.get() == "" or manufacturer.get() == "" or tDef.get() == "Select a Type" or \
+        IP.get() == "" or not ram.get().isdigit() or not storage.get().isdigit():
+            errorLabel = Label(table, text="Something isn't right! Please take a look over the form and try again.", fg = "red")
+            errorLabel.grid(column = 0, row = 12)
+        else:
+            db.createAsset(oDef.get(), cal.get_date(), pounds.get() + "." + pence.get(),
+            notes.get(), name.get(), model.get(), manufacturer.get(), tDef.get(), IP.get(),
+            ram.get(), storage.get())
+            refreshButtonOnClick()
+        
+
+    def detectCurrentDevice():
+        print("")
+
     nameLabel = Label(table, text="Device Name")
     nameLabel.grid(column=0,row=0)
     name = Entry(table)
@@ -43,19 +63,61 @@ def newAssetForm():
 
     osLabel = Label(table, text="OS")
     osLabel.grid(column=0,row=3)
-    os = Entry(table)
+    oses = ["Windows", "Linux", "Mac"]
+    oDef = StringVar(value="Select an OS")
+    os = OptionMenu(table, oDef, *oses)
     os.grid(column=1,row=3)
 
     purchaseDateLabel = Label(table, text="Purchase Date")
     purchaseDateLabel.grid(column=0,row=4)
-    cal = Calendar(table, year=2025, month=1, day=1)
+    cal = Calendar(table, year=2025, month=1, day=10, date_pattern='yyyy-mm-dd')
     cal.grid(column=1,row=4)
 
+    purchasePriceLabel = Label(table, text="Purchase Price")
+    purchasePriceLabel.grid(column=0,row=5)
+    priceSelector = Frame(table, bg="white")
+    poundsLabel = Label(priceSelector, text="$")
+    pounds = Entry(priceSelector, width=5)
+    penceLabel = Label(priceSelector, text=".")
+    pence = Entry(priceSelector, width=3)
+    poundsLabel.grid(column=0, row=0)
+    pounds.grid(column=1, row=0)
+    penceLabel.grid(column=2, row=0)
+    pence.grid(column=3, row=0)
+    priceSelector.grid(column=1,row=5) 
 
+    notesLabel = Label(table, text="Notes")
+    notesLabel.grid(column=0,row=6)
+    notes = Entry(table)
+    notes.grid(column=1,row=6)
 
-# Sends insert to database
-def insertAssetOnClick():
-    print("")
+    typeLabel = Label(table, text="Type")
+    typeLabel.grid(column=0,row=7)
+    types = ["PC", "Laptop", "Server", "Phone", "Tablet", "Printer"]
+    tDef = StringVar(value="Select a Type")
+    dType = OptionMenu(table, tDef, *types)
+    dType.grid(column=1,row=7)
+
+    IPLabel = Label(table, text="IPv4")
+    IPLabel.grid(column=0,row=8)
+    IP = Entry(table)
+    IP.grid(column=1,row=8)
+
+    ramLabel = Label(table, text="Ram (GB)")
+    ramLabel.grid(column=0,row=9)
+    ram = Entry(table)
+    ram.grid(column=1,row=9)
+
+    storageLabel = Label(table, text="Storage (GB)")
+    storageLabel.grid(column=0,row=10)
+    storage = Entry(table)
+    storage.grid(column=1,row=10)
+
+    autoBtn = Button(table, text="Use Current Device", command=detectCurrentDevice)
+    autoBtn.grid(column=0, row=11)
+
+    submitBtn = Button(table, text="Submit", command=insertAssetOnClick)
+    submitBtn.grid(column=1, row=11)
 
 # --------------------
 #     MAIN WINDOW
