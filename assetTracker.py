@@ -14,14 +14,14 @@ def refreshButtonOnClick():
     clearTable()
     i = 0
     db.readAsset(None, None)
-    keys = ["ID","Operating System","Purchase Date","Purchase Price","Notes","Name","Model","Manufacturer","Type","IP","RAM","Storage"]
+    keys = ["ID","Operating System","Purchase Date","Purchase Price ($)","Notes","Name","Model","Manufacturer","Type","IP","RAM (GB)","Storage (GB)","Employee Email"]
     for z, k in enumerate(keys):
-        item = Label(table, text=k, bg="red")
-        item.grid(column=z%12, row=0, padx=(1, 1), pady=(1, 1))
+        item = Label(table, text=k, bg="white", font='Helvetica 10 bold')
+        item.grid(column=z%13, row=0, padx=(1, 1), pady=(1, 1), sticky="w")
     for x in db.readResult:
         for y in x:
             item = Label(table, text =y, bg="white")
-            item.grid(column= i%12, row=(i+12)//12, padx=(1, 1), pady=(1, 1))
+            item.grid(column= i%13, row=(i+13)//13, padx=(1, 1), pady=(1, 1))
             i = i + 1
     table.pack(padx=(5, 5), pady=(5, 5), side=TOP, anchor=NW)
 
@@ -33,15 +33,16 @@ def newAssetForm():
         if oDef.get() == "Select an OS" or not pounds.get().isdigit() or \
         not pence.get().isdigit() or notes.get() == "" or name.get() == "" or \
         model.get() == "" or manufacturer.get() == "" or tDef.get() == "Select a Type" or \
-        IP.get() == "" or not ram.get().isdigit() or not storage.get().isdigit():
+        IP.get() == "" or not ram.get().isdigit() or not storage.get().isdigit() or \
+        eDef.get() == "Select an Employee":
             errorLabel = Label(table, text="Something isn't right! Please take a look over the form and try again.", fg = "red")
-            errorLabel.grid(column = 0, row = 12)
+            errorLabel.grid(column = 0, row = 13)
         else:
             db.createAsset(oDef.get(), cal.get_date(), pounds.get() + "." + pence.get(),
             notes.get(), name.get(), model.get(), manufacturer.get(), tDef.get(), IP.get(),
-            ram.get(), storage.get())
+            ram.get(), storage.get(), eDef.get())
             refreshButtonOnClick()
-        
+    
 
     def detectCurrentDevice():
         print("")
@@ -113,11 +114,75 @@ def newAssetForm():
     storage = Entry(table)
     storage.grid(column=1,row=10)
 
+    db.readEmployee(None, None)
+    employeesList = []
+    for x in db.readResult:
+        employeesList.append(x[0])
+    employeeLabel = Label(table, text="Employee")
+    employeeLabel.grid(column=0,row=11)
+    eDef = StringVar(value="Select an Employee")
+    employee = OptionMenu(table, eDef, *employeesList)
+    employee.grid(column=1,row=11)
+
     autoBtn = Button(table, text="Use Current Device", command=detectCurrentDevice)
-    autoBtn.grid(column=0, row=11)
+    autoBtn.grid(column=0, row=12)
 
     submitBtn = Button(table, text="Submit", command=insertAssetOnClick)
-    submitBtn.grid(column=1, row=11)
+    submitBtn.grid(column=1, row=12)
+
+# Opens a form to insert a new employee
+def newEmployeeForm():
+    clearTable()
+    def insertEmployeeOnClick():
+        deparment = 5
+        dupeEmail = 0
+        if dDef.get() == "Finance":
+            deparment = 0
+        elif dDef.get() == "Human Resources":
+            deparment = 1
+        elif dDef.get() == "Operations":
+            deparment = 2
+        elif dDef.get() == "Sales":
+            deparment = 3
+        elif dDef.get() == "Information Technology":
+            deparment = 4
+
+        db.readEmployee(None, None)
+        for x in db.readResult:
+            if x[0] == email.get():
+                dupeEmail = 1
+        if deparment == 5 or dupeEmail == 1:
+            errorLabel = Label(table, text="Something isn't right! Please take a look over the form and try again.", fg = "red")
+            errorLabel.grid(column = 0, row = 12)
+        else:
+            db.createEmployee(deparment, email.get(), fName.get(), lName.get())
+            refreshButtonOnClick()
+
+    fNameLabel = Label(table, text="First Name")
+    fNameLabel.grid(column=0,row=0)
+    fName = Entry(table)
+    fName.grid(column=1,row=0)
+
+    lNameLabel = Label(table, text="Last Name")
+    lNameLabel.grid(column=0,row=1)
+    lName = Entry(table)
+    lName.grid(column=1,row=1)
+
+    emailLabel = Label(table, text="Email")
+    emailLabel.grid(column=0,row=2)
+    email = Entry(table)
+    email.grid(column=1,row=2)
+
+    DepartmentLabel = Label(table, text="Department")
+    DepartmentLabel.grid(column=0,row=3)
+    deps = ["Finance", "Human Resources", "Operations", "Sales", "Information Technology"]
+    dDef = StringVar(value="Select a Department")
+    dType = OptionMenu(table, dDef, *deps)
+    dType.grid(column=1,row=3)
+
+    submitBtn = Button(table, text="Submit", command=insertEmployeeOnClick)
+    submitBtn.grid(column=1, row=4)
+
 
 # --------------------
 #     MAIN WINDOW
@@ -127,20 +192,20 @@ root = Tk()
 menubar = Menu(root)
 root.config(menu = menubar)
 root.title("Asset Tracker")
-root.geometry("1000x500")
+root.geometry("1500x750")
 table = Frame(root, bg="white")
 
 # Adding Assets Menu and Commands
 assets = Menu(menubar, tearoff = 0)
 menubar.add_cascade(label ='󰍹   Assets', menu = assets)
 assets.add_command(label ='New', command = newAssetForm)
-assets.add_command(label ='Update', command = None)
+assets.add_command(label ='Update', command = updateAssetForm)
 assets.add_command(label ='Remove', command = None)
 
 # Adding Employees Menu and Commands
 employees = Menu(menubar, tearoff = 0)
 menubar.add_cascade(label ='   Employees', menu = employees)
-employees.add_command(label ='New', command = None)
+employees.add_command(label ='New', command = newEmployeeForm)
 employees.add_command(label ='Update', command = None)
 employees.add_command(label ='View All', command = None)
 employees.add_command(label ='Remove', command = None)
