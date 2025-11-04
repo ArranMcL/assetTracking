@@ -205,7 +205,7 @@ assets.add_command(label ='Remove', command = None)
 # Adding Employees Menu and Commands
 employees = Menu(menubar, tearoff = 0)
 menubar.add_cascade(label ='   Employees', menu = employees)
-employees.add_command(label ='New', command = newEmployeeForm)
+employees.add_command(label ='New', command = None)
 employees.add_command(label ='Update', command = None)
 employees.add_command(label ='View All', command = None)
 employees.add_command(label ='Remove', command = None)
